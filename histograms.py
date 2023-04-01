@@ -1,3 +1,4 @@
+#Dimitrios Sintos A.M: 4012
 import random
 import sys
 import csv 
@@ -105,7 +106,6 @@ def equidepth_histogram(data, column_name):
     end = bin_size
     bins = []
 
-    push_to_next_bin = []
     # create bins
     for i in range(BINS):
         if i == BINS - 1:  # last bin
@@ -147,16 +147,16 @@ def calculate_overlap(bin_range, custom_range):
 
 def estimate_results(equiwidth_histogram_dict, equidepth_histogram_dict, a, b):
     custom_range = (a, b)
-    overlap_equiwidth_tuples = [x for x in equiwidth_histogram_dict.keys() if (x[0] >= a and x[1] < b) or (x[0] <= a and x[1] > b) or (x[0] <= a and x[1] > a) or (x[0] < b and x[1] >= b)]
-    overlap_equidepth_tuples = [x for x in equidepth_histogram_dict.keys() if (x[0] >= a and x[1] < b) or (x[0] <= a and x[1] > b) or (x[0] <= a and x[1] > a) or (x[0] < b and x[1] >= b)]
-    # print("Overlap equidepth:", overlap_equidepth_tuples )
+    overlap_equiwidth_ranges = [x for x in equiwidth_histogram_dict.keys() if (x[0] >= a and x[1] < b) or (x[0] <= a and x[1] > b) or (x[0] <= a and x[1] > a) or (x[0] < b and x[1] >= b)]
+    overlap_equidepth_ranges = [x for x in equidepth_histogram_dict.keys() if (x[0] >= a and x[1] < b) or (x[0] <= a and x[1] > b) or (x[0] <= a and x[1] > a) or (x[0] < b and x[1] >= b)]
+    # print("Overlap equidepth:", overlap_equidepth_ranges )
     estimated_equiwidth = 0
-    for x in overlap_equiwidth_tuples:
+    for x in overlap_equiwidth_ranges:
         overlap_percentage = calculate_overlap(x,custom_range)
         estimated_equiwidth += equiwidth_histogram_dict[x] * overlap_percentage / 100
     print("Estimated equiwidth results:", estimated_equiwidth)
     estimated_equidepth = 0
-    for x in overlap_equidepth_tuples:
+    for x in overlap_equidepth_ranges:
         overlap_percentage = calculate_overlap(x, custom_range)
         estimated_equidepth += equidepth_histogram_dict[x] * overlap_percentage / 100
     print("Estimated equidepth results:", estimated_equidepth)
@@ -181,8 +181,8 @@ def draw_bar_chart(histogram, column_name):
     plt.title(column_name)
     plt.show()
 
-def testing(equiwidth_histogram_dict, equidepth_histogram_dict, num_of_tests):
-    statistices = []
+def testing(data,equiwidth_histogram_dict, equidepth_histogram_dict, num_of_tests):
+    statistics = []
     for i in range(num_of_tests):
         a = random.uniform(min(data), max(data))
         b = random.uniform(a, max(data))
@@ -191,13 +191,13 @@ def testing(equiwidth_histogram_dict, equidepth_histogram_dict, num_of_tests):
         estimated_equiwidth, estimated_equidepth = estimate_results(equiwidth_histogram_dict, equidepth_histogram_dict, a, b)
         print(f"Actual results: {len(actual_result)}")
         if abs(estimated_equiwidth - len(actual_result)) > abs(estimated_equidepth - len(actual_result)):
-            statistices.append("depth")
+            statistics.append("depth")
             print("Equidepth is better")
         else:
-            statistices.append("width")
+            statistics.append("width")
             print("Equiwidth is better")
-    print("Statistics:\n", "width: ", statistices.count("width"), "depth: ", statistices.count("depth"))
-    if statistices.count("width") > statistices.count("depth"):
+    print("Statistics:\n", "width: ", statistics.count("width"), "depth: ", statistics.count("depth"))
+    if statistics.count("width") > statistics.count("depth"):
         print("Equiwidth is better")
     else:
         print("Equidepth is better")
@@ -217,9 +217,10 @@ if __name__ == "__main__":
     print("CSV path: ", csv_path)
     print("Column name: ", column_name)
     data = get_column_data(csv_path, column_name)
-    #check how many time number 136250 is in the data
-    print("\n136250:",data.count(136250))
-    print("125156:",data.count(125156))
+    print(f"{column_name} valid data: {len(data)}")
+
+    #print("\n19731.0:",data.count(19731)) 
+    
     equiwidth_histogram_dict = equiwidth_histogram(data, column_name)
     equidepth_histogram_dict = equidepth_histogram(data, column_name)
     # draw_bar_chart(equiwidth_histogram_dict, column_name)
@@ -238,5 +239,5 @@ if __name__ == "__main__":
         elif answer == 'n' or answer == 'N':
             break
     
-    testing(equiwidth_histogram_dict, equidepth_histogram_dict, 100)
+    #testing(data,equiwidth_histogram_dict, equidepth_histogram_dict, 100)
     
